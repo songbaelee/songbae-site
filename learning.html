@@ -77,7 +77,7 @@ h1{font:600 clamp(28px,3.6vw,42px)/1.08 "Space Grotesk",sans-serif;letter-spacin
 <body>
 <header class="top band">
   <h1>Upskilling in my 50s, when I thought I'd be coasting into retirement</h1>
-  <p class="lede"><b><span id="n">45</span> projects</b>: my first new tech skills since learning Excel 40 years ago. <a href="#story">Read the story</a></p>
+  <p class="lede"><b><span id="n">45</span> projects</b>: my first new tech skills since learning Excel 40 years ago. <a href="story.html">Read the story</a></p>
   <div class="bar">
     <div class="views" role="group" aria-label="Arrange cards">
       <button id="v-time" data-v="time" aria-pressed="true">Timeline</button>
@@ -96,50 +96,6 @@ h1{font:600 clamp(28px,3.6vw,42px)/1.08 "Space Grotesk",sans-serif;letter-spacin
   <p class="hint" id="hint"></p>
 </header>
 <main class="wrap"><div class="board" id="board"></div></main>
-<section class="story" id="story" aria-labelledby="story-h">
-  <p class="draft">Rough draft, Nov 2026</p>
-  <h2 id="story-h">The story</h2>
-
-  <h3>I was working on becoming a Luddite</h3>
-  <p>For about 30 years I didn't learn anything new in technology. Excel and an HP-12C got me through college and a career in finance, and I saw no reason to add to the list. I was well on my way to becoming a bona fide Luddite. I didn't want to change jobs, partly because then I'd have to learn a new email system.</p>
-  <p>At USAID, the only thing I used AI for was making up funny movie plots and trading them with two colleagues by email.</p>
-  <p>Then I spent fifteen months changing jobs.</p>
-
-  <h3>The job search gave me a reason</h3>
-  <p>I was job hunting for all of 2025 and into early 2026. AI started as an assistant: resumes, cover letters, researching organizations, preparing for interviews. Practicing interviews out loud in voice mode turned out to be one of the most useful things I did. I tried the same thing for Korean. It was not as good.</p>
-  <p>Job postings also turned into a syllabus. If a posting asked for HubSpot or Asana, I learned HubSpot or Asana. Asana is the one that stuck: we're starting to use it at my new job. My wife suggested Salesforce, which I did entirely through Salesforce's free Trailhead training, until I got a job and stopped. The training site was confusing, let alone the content.</p>
-
-  <h3>Then the fun part: projects that were really an excuse to learn</h3>
-  <p>At Calvert we used Airtable and Power BI all the time, and I never learned either one. I always thought that was an opportunity lost. So in late 2025 I finally learned Airtable, by building a database of U.S. agricultural lenders and a live map that pulled from it. Power BI, with YouTube videos recommended by Lucas Pappas, our resident Power BI wizard, became too much of a project, and I dropped it.</p>
-  <p>Some of the things I built along the way:</p>
-  <ul>
-    <li><b>A Gmail add-on</b> in Google Apps Script that saves an email as a PDF to Google Drive. I was really impressed that I made it. I used it for a few days.</li>
-    <li><b>A phone app,</b> something I'd always wanted to make: a tree map for Wyngate Tree Friends, in Google AppSheet. Probably the most complicated thing I did, even with AI's help.</li>
-    <li><b>My own website.</b> I'd wanted one for about 20 years. Building it cleared up the mystery of how websites work, which was very satisfying. Hosting it on my own domain was something I did once, and once was enough.</li>
-    <li><b>Websites for two neighborhood groups,</b> <a href="https://wyngatecitizens.org">wyngatecitizens.org</a> and <a href="https://wyngatetreefriends.org">wyngatetreefriends.org</a>.</li>
-    <li><b>Learning tools for work subjects,</b> like an agroforestry carbon finance site and a field guide, because building a tool for a subject turned out to be a good way to learn it.</li>
-  </ul>
-
-  <h3>How I worked with code, in three stages</h3>
-  <p>First, I had AI make a file and uploaded it to the GitHub website by hand. Every site I made from December 2025 to May 2026 was built that way; one of them took 110 uploads. Next, I asked AI where to make changes and edited the files myself. Then, on May 31, 2026, I made my first commit from my own PC, and over the summer I got comfortable in the terminal with Git, VS Code and a coding agent: Codex first, then Claude Code. Getting comfortable at the command line was the biggest jump of all. I still run Claude Code in the terminal, even though I know I could use it on the web.</p>
-  <p>This page went one step further: Claude added it to my site and pushed it live from a chat, with no terminal at all.</p>
-
-  <h3>Hard things didn't wait</h3>
-  <p>I assumed I'd start with easy things and work up. I didn't. Hard things came early (the Gmail add-on in July 2025, the live map in December, the phone app in January), in the middle (the terminal, in June 2026) and late (a carpool planner on a real shared database, in November). What grew steadily wasn't difficulty. It was independence and scale: from uploading files AI made, to editing them, to directing a coding agent; from single pages to multi-page sites; from private experiments to public ones. AI absorbed enough of the difficulty that the hard things were possible from the start.</p>
-
-  <h3>Switching between AI tools</h3>
-  <p>I started with ChatGPT, so I made all my early-AI mistakes there. Then I started trying Claude, and the cost of switching back gets high. I used Gemini for the Google projects, and twice I gave all three the same task to compare them. Every one of them hallucinates and frustrates you. High highs and low lows.</p>
-  <p>The lesson I keep relearning: when one LLM gets something wrong, or I'm not sure it's right, ask another one the same question and compare. They fail in different ways. A favorite trick is to have one draft the prompt, then run it in all of them. Once I let one run a deep research mode for hours. It produced a huge report that, in the end, wasn't hugely insightful.</p>
-
-  <h3>Free tiers bite back</h3>
-  <p>I pick free tiers on purpose, and they kept finding ways to bite. Airtable's free monthly API limit shut down the tree map app until the limit reset, so I moved its data to Google Sheets. The free version of AppSheet caps the app at 10 users. Softr had API limits too. And the most annoying thing outside AI hallucinations: when Asana's automatic premium trial ended, they locked my whole account and wouldn't let me go back to the free version, because I'd used premium features. They wouldn't tell me which ones.</p>
-
-  <h3>What stuck</h3>
-  <p>Some things I learned once, and that was enough. Some I dropped. A few became daily tools: my Supernote, Wispr Flow for dictation, and Claude Code. Since April 2026 I've been working full-time at CRS, which is great, except that I don't have nearly as much time to play.</p>
-
-  <h3>If you want to try this</h3>
-  <p>Have fun. Get comfortable using AI. Pick projects you have a reason to care about, and let them teach you. The cards above are a menu, not a syllabus.</p>
-</section>
 <p class="foot">Rough draft, Nov 2026. Built from my GitHub history, my own notes, and what ChatGPT and Gemini found in their chat histories; some dates and details are still unconfirmed. Tap a card for details.</p>
 <div style="height:120px"></div>
 <aside class="drawer" id="drawer" aria-live="polite">
