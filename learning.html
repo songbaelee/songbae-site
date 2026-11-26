@@ -100,6 +100,7 @@ h1{font:600 clamp(28px,3.6vw,42px)/1.08 "Space Grotesk",sans-serif;letter-spacin
 <div style="height:120px"></div>
 <aside class="drawer" id="drawer" aria-live="polite">
   <button class="close" id="close" aria-label="Close details">×</button>
+  <p id="back" hidden style="margin:0 0 6px;font-size:15px"><a href="milestones.html">← Back to milestones</a></p>
   <h2 id="dt"></h2>
   <div class="facts" id="df"></div>
   <p id="dn"></p>
@@ -239,7 +240,7 @@ ro.observe(document.querySelector('.wrap'));
 const start = (location.hash || '').slice(1);
 setView(VIEWS[start] ? start : 'time');
 const wantCard = new URLSearchParams(location.search).get('card');
-if (wantCard) { const hit = DATA.find(d => d.name === wantCard); if (hit) setTimeout(() => show(hit.id), 450); }
+if (wantCard) { document.getElementById('back').hidden = false; const hit = DATA.find(d => d.name === wantCard); if (hit) setTimeout(() => show(hit.id), 450); }
 addEventListener('hashchange', () => { const h = location.hash.slice(1); if (VIEWS[h] && h !== current) setView(h); });
 }
 </script>
