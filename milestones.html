@@ -76,7 +76,7 @@ const MS = [
   {card:'Carpool planner', m:'2026-11', short:'A database somewhere else', d:'Nov 2026', text:'The carpool planner: my first project that needed a real database living somewhere else.'}
 ];
 // callout positions in chart coordinates: dx, dy offsets from the point (px), anchor side
-const POS = [[30,-110],[-40,-150],[-150,-120],[-110,-205],{x:602,y:383},{x:814,y:362},{x:602,y:453},{x:814,y:293},[-190,30]];
+const POS = [{x:50,y:410},{x:440,y:462},{x:416,y:282},{x:640,y:335},{x:560,y:240},{x:790,y:240},{x:617,y:151},{x:858,y:205},{x:700,y:85}];
 const FALLBACK = {'2024-06':1,'2025-03':1,'2025-05':1,'2025-06':2,'2025-07':1,'2025-08':2,'2025-10':4,'2025-11':6,'2025-12':4,'2026-01':5,'2026-03':1,'2026-04':3,'2026-05':5,'2026-06':4,'2026-07':2,'2026-08':3,'2026-09':2,'2026-10':1,'2026-11':6};
 const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -118,7 +118,7 @@ function draw(counts){
   MS.forEach((ms, n) => {
     const i = months.indexOf(ms.m); if (i < 0) return;
     const px = X(i), py = Y(vals[i]);
-    const w = Math.max(ms.short.length * 7.6, ms.d.length * 6.6) + 22, h = 44;
+    const w = ms.short.length * 7.6 + 22, h = 28;
     let rx, by;
     if (Array.isArray(POS[n])) { const [dx, dy] = POS[n]; rx = dx < 0 ? px + dx - w : px + dx; by = py + dy; }
     else { rx = POS[n].x; by = POS[n].y; }
@@ -127,7 +127,7 @@ function draw(counts){
     const delay = (4 * segs[i] / tot).toFixed(2);
     const href = 'learning.html?card=' + encodeURIComponent(ms.card);
     const tip = `<title>${esc(ms.d)}: ${esc(ms.text)} (click to open the card)</title>`;
-    callouts += `<a href="${href}" class="callout"><g class="pop" style="animation-delay:${delay}s">${tip}<line class="lead" x1="${px}" y1="${py}" x2="${lx}" y2="${ly}"/><rect class="cbox" x="${rx}" y="${by}" width="${w}" height="${h}" rx="6"/><text class="cdt" x="${rx+11}" y="${by+17}">${n+1} · ${esc(ms.d)}</text><text class="ctx" x="${rx+11}" y="${by+35}">${esc(ms.short)}</text></g></a>`;
+    callouts += `<a href="${href}" class="callout"><g class="pop" style="animation-delay:${delay}s">${tip}<line class="lead" x1="${px}" y1="${py}" x2="${lx}" y2="${ly}"/><rect class="cbox" x="${rx}" y="${by}" width="${w}" height="${h}" rx="6"/><text class="ctx" x="${rx+11}" y="${by+19}">${esc(ms.short)}</text></g></a>`;
     dots += `<a href="${href}" class="dotlink"><g class="pop" style="animation-delay:${delay}s">${tip}<circle class="dot" cx="${px}" cy="${py}" r="11"/><text class="num" x="${px}" y="${py+4}" text-anchor="middle">${n+1}</text></g></a>`;
   });
   s += callouts + dots;
