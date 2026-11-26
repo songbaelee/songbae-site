@@ -30,6 +30,8 @@ svg{display:block;width:100%;height:auto;font-family:Inter,system-ui,sans-serif}
 .cbox{fill:var(--box);stroke:var(--rule);stroke-width:1}
 .ctx{fill:var(--ink);font-size:14px;font-weight:500}
 .cdt{fill:var(--soft);font-size:12px}
+.band{fill:light-dark(#f3efe4,#1a1d12)}
+.bandlab{fill:var(--soft);font:600 13px Inter,sans-serif;letter-spacing:.04em;text-transform:uppercase}
 .flat{fill:var(--soft);font-size:13px;font-style:italic}
 .total{fill:var(--ink);font:600 15px "Space Grotesk",sans-serif}
 .note{color:var(--soft);font-size:14px;margin-top:24px}
@@ -96,6 +98,8 @@ function draw(counts){
     if (mm === 1 || (mm % 3 === 0 && mm !== 12)) { lab = MON[mm-1]; if (!seenYear[yy]) { lab += ` ${yy}`; seenYear[yy] = 1; } }
     if (lab) s += `<text class="tick" x="${X(i)}" y="${H-16}" text-anchor="middle">${lab}</text>`;
   });
+  const ja = months.indexOf('2025-03'), jb = months.indexOf('2026-03');
+  if (ja >= 0 && jb > ja) s = s.replace('<svg viewBox="0 0 ${W} ${H}">'.replace('${W}',W).replace('${H}',H), m0 => m0 + `<rect class="band" x="${X(ja)}" y="${t}" width="${X(jb)-X(ja)}" height="${ph}"/><text class="bandlab" x="${X(ja)+8}" y="${t+18}">Job search</text>`);
   s += `<path class="area" d="M${X(0)} ${Y(0)} ${vals.map((v,i)=>`L${X(i)} ${Y(v)}`).join(' ')} L${X(vals.length-1)} ${Y(0)} Z"/>`;
   s += `<polyline class="line" pathLength="1" points="${vals.map((v,i)=>`${X(i)},${Y(v)}`).join(' ')}"/>`;
   const fa = months.indexOf('2024-06'), fb = months.indexOf('2025-02');
