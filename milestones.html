@@ -41,11 +41,13 @@ svg{display:block;width:100%;height:auto;font-family:Inter,system-ui,sans-serif}
 .replay{font:500 14px Inter,sans-serif;color:var(--ink);background:none;border:1px solid var(--rule);border-radius:6px;padding:4px 12px;cursor:pointer;margin-top:8px}
 .anim .line{stroke-dasharray:1;stroke-dashoffset:1;animation:draw 4s linear forwards}
 .anim .area{opacity:0;animation:fade .8s ease 4s forwards}
+.anim .drop{transform-box:fill-box;transform-origin:top;transform:scaleY(0);animation:drop .5s ease-out forwards}
+@keyframes drop{to{transform:scaleY(1)}}
 .anim .pop{opacity:0;animation:pop .45s ease forwards}
 @keyframes draw{to{stroke-dashoffset:0}}
 @keyframes fade{to{opacity:.1}}
 @keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){.anim .line,.anim .area,.anim .pop{animation:none;opacity:1;stroke-dashoffset:0}.anim .area{opacity:.1}.replay{display:none}}
+@media (prefers-reduced-motion:reduce){.anim .drop{animation:none;transform:none}.anim .line,.anim .area,.anim .pop{animation:none;opacity:1;stroke-dashoffset:0}.anim .area{opacity:.1}.replay{display:none}}
 @media (max-width:700px){.callout{display:none}}
 </style>
 </head>
@@ -99,7 +101,12 @@ function draw(counts){
     if (lab) s += `<text class="tick" x="${X(i)}" y="${H-16}" text-anchor="middle">${lab}</text>`;
   });
   const ja = months.indexOf('2025-03');
-  if (ja >= 0) s += `<line class="kick" x1="${X(ja)}" x2="${X(ja)}" y1="${t}" y2="${t+ph}"/><text class="bandlab" x="${X(ja)+8}" y="${t+18}">Job search begins</text>`;
+  if (ja >= 0) {
+    let segA = 0, segT = 0;
+    for (let i = 1; i < vals.length; i++) { const d = Math.hypot(X(i)-X(i-1), Y(vals[i])-Y(vals[i-1])); segT += d; if (i <= ja) segA += d; }
+    const kd = (4 * segA / segT).toFixed(2);
+    s += `<line class="kick drop" style="animation-delay:${kd}s" x1="${X(ja)}" x2="${X(ja)}" y1="${t}" y2="${t+ph}"/><text class="bandlab pop" style="animation-delay:${(+kd + 0.3).toFixed(2)}s" x="${X(ja)+8}" y="${t+18}">Job search begins</text>`;
+  }
   s += `<path class="area" d="M${X(0)} ${Y(0)} ${vals.map((v,i)=>`L${X(i)} ${Y(v)}`).join(' ')} L${X(vals.length-1)} ${Y(0)} Z"/>`;
   s += `<polyline class="line" pathLength="1" points="${vals.map((v,i)=>`${X(i)},${Y(v)}`).join(' ')}"/>`;
   const fa = months.indexOf('2024-06'), fb = months.indexOf('2025-02');
