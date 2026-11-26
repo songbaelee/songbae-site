@@ -56,7 +56,7 @@ svg{display:block;width:100%;height:auto;font-family:Inter,system-ui,sans-serif}
   <p class="lede">The line is the running total of everything I learned, by month. The numbered points are the jumps: the first time I could do something I couldn't do before. Click one to see its card.</p>
   <div id="chart" role="img" aria-label="Running total of learning items by month, from 1 in 2024 to the current total, with nine numbered milestones."></div>
   <button class="replay" id="replay" type="button">Replay</button>
-  <p class="note">Dates are approximate, especially for 2025. The gap between 2024 and March 2025 is left out of the chart.</p>
+  <p class="note">Dates are approximate, especially for 2025.</p>
 </main>
 <script>
 const MS = [
@@ -71,17 +71,16 @@ const MS = [
   {card:'Carpool planner', m:'2026-11', short:'A database somewhere else', d:'Nov 2026', text:'The carpool planner: my first project that needed a real database living somewhere else.'}
 ];
 // callout positions in chart coordinates: dx, dy offsets from the point (px), anchor side
-const POS = [[30,-110],[-40,-150],[-150,-120],[-110,-205],[0,60],[-20,175],[-20,260],[20,120],[-190,30]];
+const POS = [[30,-110],[-40,-150],[-150,-120],[-110,-205],{x:602,y:383},{x:814,y:362},{x:602,y:453},{x:814,y:293},[-190,30]];
 const FALLBACK = {'2024-06':1,'2025-03':1,'2025-05':1,'2025-06':2,'2025-07':1,'2025-08':2,'2025-10':4,'2025-11':6,'2025-12':4,'2026-01':5,'2026-03':1,'2026-04':3,'2026-05':5,'2026-06':4,'2026-07':2,'2026-08':3,'2026-09':2,'2026-10':1,'2026-11':6};
 const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 function draw(counts){
   const keys = Object.keys(counts).sort();
-  const first = keys[0], start = keys.find(k => k >= '2025-01');
-  const last = keys[keys.length-1];
-  const months = [first];
-  let [y, m] = start.split('-').map(Number);
+  const first = keys[0], last = keys[keys.length-1];
+  const months = [];
+  let [y, m] = first.split('-').map(Number);
   while (true){ const k = `${y}-${String(m).padStart(2,'0')}`; if (k > last) break; months.push(k); m++; if (m > 12){ m = 1; y++; } }
   let run = 0; const vals = months.map(k => (run += counts[k] || 0));
   const total = run, top = Math.ceil((total + 4) / 10) * 10;
@@ -89,14 +88,11 @@ function draw(counts){
   const X = i => l + i * pw / (months.length - 1), Y = v => t + ph - v / top * ph;
   let s = `<svg viewBox="0 0 ${W} ${H}">`;
   for (let g = 0; g <= top; g += 10) s += `<line class="gl" x1="${l}" x2="${W-r}" y1="${Y(g)}" y2="${Y(g)}"/><text class="tick" x="${l-8}" y="${Y(g)+4}" text-anchor="end">${g}</text>`;
-  const gx = (X(0) + X(1)) / 2;
-  s += `<line class="gl" x1="${gx}" x2="${gx}" y1="${t}" y2="${t+ph}" stroke-dasharray="4 4"/>`;
   const seenYear = {};
   months.forEach((k, i) => {
     const [yy, mm] = k.split('-').map(Number);
     let lab = '';
-    if (i === 0) lab = String(yy);
-    else if (i > 1 && (mm === 1 || (mm % 3 === 0 && mm !== 12))) { lab = MON[mm-1]; if (!seenYear[yy]) { lab += ` ${yy}`; seenYear[yy] = 1; } }
+    if (mm === 1 || (mm % 3 === 0 && mm !== 12)) { lab = MON[mm-1]; if (!seenYear[yy]) { lab += ` ${yy}`; seenYear[yy] = 1; } }
     if (lab) s += `<text class="tick" x="${X(i)}" y="${H-16}" text-anchor="middle">${lab}</text>`;
   });
   s += `<path class="area" d="M${X(0)} ${Y(0)} ${vals.map((v,i)=>`L${X(i)} ${Y(v)}`).join(' ')} L${X(vals.length-1)} ${Y(0)} Z"/>`;
@@ -108,13 +104,16 @@ function draw(counts){
   MS.forEach((ms, n) => {
     const i = months.indexOf(ms.m); if (i < 0) return;
     const px = X(i), py = Y(vals[i]);
-    const [dx, dy] = POS[n], bx = px + dx, by = py + dy;
     const w = Math.max(ms.short.length * 7.6, ms.d.length * 6.6) + 22, h = 44;
-    const left = dx < 0, rx = left ? bx - w : bx;
+    let rx, by;
+    if (Array.isArray(POS[n])) { const [dx, dy] = POS[n]; rx = dx < 0 ? px + dx - w : px + dx; by = py + dy; }
+    else { rx = POS[n].x; by = POS[n].y; }
+    rx = Math.max(l + 4, Math.min(rx, W - r - w));
+    const lx = Math.min(Math.max(px, rx), rx + w), ly = Math.min(Math.max(py, by), by + h);
     const delay = (4 * segs[i] / tot).toFixed(2);
     const href = 'learning.html?card=' + encodeURIComponent(ms.card);
     const tip = `<title>${esc(ms.d)}: ${esc(ms.text)} (click to open the card)</title>`;
-    callouts += `<a href="${href}" class="callout"><g class="pop" style="animation-delay:${delay}s">${tip}<line class="lead" x1="${px}" y1="${py}" x2="${bx}" y2="${by + h/2}"/><rect class="cbox" x="${rx}" y="${by}" width="${w}" height="${h}" rx="6"/><text class="cdt" x="${rx+11}" y="${by+17}">${n+1} · ${esc(ms.d)}</text><text class="ctx" x="${rx+11}" y="${by+35}">${esc(ms.short)}</text></g></a>`;
+    callouts += `<a href="${href}" class="callout"><g class="pop" style="animation-delay:${delay}s">${tip}<line class="lead" x1="${px}" y1="${py}" x2="${lx}" y2="${ly}"/><rect class="cbox" x="${rx}" y="${by}" width="${w}" height="${h}" rx="6"/><text class="cdt" x="${rx+11}" y="${by+17}">${n+1} · ${esc(ms.d)}</text><text class="ctx" x="${rx+11}" y="${by+35}">${esc(ms.short)}</text></g></a>`;
     dots += `<a href="${href}" class="dotlink"><g class="pop" style="animation-delay:${delay}s">${tip}<circle class="dot" cx="${px}" cy="${py}" r="11"/><text class="num" x="${px}" y="${py+4}" text-anchor="middle">${n+1}</text></g></a>`;
   });
   s += callouts + dots;
