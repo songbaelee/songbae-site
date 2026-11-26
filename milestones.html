@@ -31,12 +31,18 @@ svg{display:block;width:100%;height:auto;font-family:Inter,system-ui,sans-serif}
 .ctx{fill:var(--ink);font-size:14px;font-weight:500}
 .cdt{fill:var(--soft);font-size:12px}
 .total{fill:var(--ink);font:600 15px "Space Grotesk",sans-serif}
-ol.ms{list-style:none;padding:0;margin:28px 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px 28px}
-ol.ms li{display:flex;gap:12px;align-items:baseline;border-top:1px solid var(--rule);padding-top:10px}
-ol.ms .n{flex:0 0 26px;height:26px;border-radius:50%;border:2px solid var(--accent);font:600 13px/22px Inter,sans-serif;text-align:center}
-ol.ms b{font-weight:600}
-ol.ms span.d{color:var(--soft);font-size:15px}
 .note{color:var(--soft);font-size:14px;margin-top:24px}
+.callout a,.dotlink{cursor:pointer}
+.callout:hover .cbox{stroke:var(--accent);stroke-width:2}
+.dotlink:hover .dot{fill:var(--band)}
+.replay{font:500 14px Inter,sans-serif;color:var(--ink);background:none;border:1px solid var(--rule);border-radius:6px;padding:4px 12px;cursor:pointer;margin-top:8px}
+.anim .line{stroke-dasharray:1;stroke-dashoffset:1;animation:draw 4s linear forwards}
+.anim .area{opacity:0;animation:fade .8s ease 4s forwards}
+.anim .pop{opacity:0;animation:pop .45s ease forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes fade{to{opacity:.1}}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.anim .line,.anim .area,.anim .pop{animation:none;opacity:1;stroke-dashoffset:0}.anim .area{opacity:.1}.replay{display:none}}
 @media (max-width:700px){.callout{display:none}}
 </style>
 </head>
@@ -47,22 +53,22 @@ ol.ms span.d{color:var(--soft);font-size:15px}
 </div></header>
 <main>
   <h1>Milestones</h1>
-  <p class="lede">The line is the running total of everything I learned, by month. The numbered points are the jumps: the first time I could do something I couldn't do before.</p>
+  <p class="lede">The line is the running total of everything I learned, by month. The numbered points are the jumps: the first time I could do something I couldn't do before. Click one to see its card.</p>
   <div id="chart" role="img" aria-label="Running total of learning items by month, from 1 in 2024 to the current total, with nine numbered milestones."></div>
-  <ol class="ms" id="list"></ol>
+  <button class="replay" id="replay" type="button">Replay</button>
   <p class="note">Dates are approximate, especially for 2025. The gap between 2024 and March 2025 is left out of the chart.</p>
 </main>
 <script>
 const MS = [
-  {m:'2024-06', short:'Funny movie plots', d:'2024', text:'My only AI use at USAID: making up funny movie plots and trading them by email.'},
-  {m:'2025-07', short:'First code that ran', d:'Jul 2025', text:'A Gmail add-on that saves an email as a PDF. Gemini wrote it; I got it running.'},
-  {m:'2025-12', short:'GitHub and a first repo', d:'Dec 2025', text:'Set up my GitHub account and made my first repo, a map pulling live data.'},
-  {m:'2026-01', short:'Code in the console', d:'Jan 2026', text:'Opened a website’s developer tools and ran code an LLM wrote for me.'},
-  {m:'2026-03', short:'My own web address', d:'Mar 2026', text:'Gave my site its own name, songbae.com, instead of the GitHub default, set up through Cloudflare.'},
-  {m:'2026-05', short:'Commits from my PC', d:'May 2026', text:'Stopped uploading files on the GitHub website and sent changes from my own computer.'},
-  {m:'2026-06', short:'Terminal, Git, VS Code', d:'Jun 2026', text:'The biggest jump: the command line, Git and VS Code, with Codex.'},
-  {m:'2026-07', short:'Claude Code, daily', d:'Jul 2026', text:'Claude Code in the terminal became my everyday tool.'},
-  {m:'2026-11', short:'A shared database', d:'Nov 2026', text:'A carpool planner on a real shared database, and pushing to GitHub straight from a chat.'}
+  {card:'Funny movie plots', m:'2024-06', short:'Funny movie plots', d:'2024', text:'My only AI use at USAID: making up funny movie plots and trading them by email.'},
+  {card:'Gmail-to-PDF add-on', m:'2025-07', short:'First code that ran', d:'Jul 2025', text:'A Gmail add-on that saves an email as a PDF. Gemini wrote it; I got it running.'},
+  {card:'Live map from Airtable', m:'2025-12', short:'GitHub and a first repo', d:'Dec 2025', text:'Set up my GitHub account and made my first repo, a map pulling live data.'},
+  {card:'Inspecting page source and running code in the console', m:'2026-01', short:'Code in the console', d:'Jan 2026', text:'Opened a website’s developer tools and ran code an LLM wrote for me.'},
+  {card:'songbae.com on my own domain', m:'2026-03', short:'My own web address', d:'Mar 2026', text:'Gave my site its own name, songbae.com, instead of the GitHub default, set up through Cloudflare.'},
+  {card:'Wyngate Citizens Association website', m:'2026-05', short:'Commits from my PC', d:'May 2026', text:'Stopped uploading files on the GitHub website and sent changes from my own computer.'},
+  {card:'Terminal, Git and VS Code', m:'2026-06', short:'Terminal, Git, VS Code', d:'Jun 2026', text:'The biggest jump: the command line, Git and VS Code, with Codex.'},
+  {card:'Ag finance overview (first Claude Code site)', m:'2026-07', short:'Claude Code, daily', d:'Jul 2026', text:'Claude Code in the terminal became my everyday tool.'},
+  {card:'Carpool planner', m:'2026-11', short:'A database somewhere else', d:'Nov 2026', text:'The carpool planner: my first project that needed a real database living somewhere else.'}
 ];
 // callout positions in chart coordinates: dx, dy offsets from the point (px), anchor side
 const POS = [[30,-110],[-40,-150],[-150,-120],[-110,-205],[0,60],[-20,175],[-20,260],[20,120],[-190,30]];
@@ -94,23 +100,31 @@ function draw(counts){
     if (lab) s += `<text class="tick" x="${X(i)}" y="${H-16}" text-anchor="middle">${lab}</text>`;
   });
   s += `<path class="area" d="M${X(0)} ${Y(0)} ${vals.map((v,i)=>`L${X(i)} ${Y(v)}`).join(' ')} L${X(vals.length-1)} ${Y(0)} Z"/>`;
-  s += `<polyline class="line" points="${vals.map((v,i)=>`${X(i)},${Y(v)}`).join(' ')}"/>`;
+  s += `<polyline class="line" pathLength="1" points="${vals.map((v,i)=>`${X(i)},${Y(v)}`).join(' ')}"/>`;
   let callouts = '', dots = '';
+  const pts = vals.map((v,i)=>[X(i),Y(v)]); const segs=[0];
+  for (let i=1;i<pts.length;i++) segs.push(segs[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]));
+  const tot = segs[segs.length-1];
   MS.forEach((ms, n) => {
     const i = months.indexOf(ms.m); if (i < 0) return;
     const px = X(i), py = Y(vals[i]);
     const [dx, dy] = POS[n], bx = px + dx, by = py + dy;
     const w = Math.max(ms.short.length * 7.6, ms.d.length * 6.6) + 22, h = 44;
     const left = dx < 0, rx = left ? bx - w : bx;
-    callouts += `<g class="callout"><line class="lead" x1="${px}" y1="${py}" x2="${left ? bx : bx}" y2="${by + h/2}"/><rect class="cbox" x="${rx}" y="${by}" width="${w}" height="${h}" rx="6"/><text class="cdt" x="${rx+11}" y="${by+17}">${n+1} · ${esc(ms.d)}</text><text class="ctx" x="${rx+11}" y="${by+35}">${esc(ms.short)}</text></g>`;
-    dots += `<circle class="dot" cx="${px}" cy="${py}" r="11"/><text class="num" x="${px}" y="${py+4}" text-anchor="middle">${n+1}</text>`;
+    const delay = (4 * segs[i] / tot).toFixed(2);
+    const href = 'learning.html?card=' + encodeURIComponent(ms.card);
+    const tip = `<title>${esc(ms.d)}: ${esc(ms.text)} (click to open the card)</title>`;
+    callouts += `<a href="${href}" class="callout"><g class="pop" style="animation-delay:${delay}s">${tip}<line class="lead" x1="${px}" y1="${py}" x2="${bx}" y2="${by + h/2}"/><rect class="cbox" x="${rx}" y="${by}" width="${w}" height="${h}" rx="6"/><text class="cdt" x="${rx+11}" y="${by+17}">${n+1} · ${esc(ms.d)}</text><text class="ctx" x="${rx+11}" y="${by+35}">${esc(ms.short)}</text></g></a>`;
+    dots += `<a href="${href}" class="dotlink"><g class="pop" style="animation-delay:${delay}s">${tip}<circle class="dot" cx="${px}" cy="${py}" r="11"/><text class="num" x="${px}" y="${py+4}" text-anchor="middle">${n+1}</text></g></a>`;
   });
   s += callouts + dots;
-  s += `<text class="total" x="${X(vals.length-1)}" y="${Y(total)-20}" text-anchor="end">${total} items</text></svg>`;
+  s += `<text class="total pop" style="animation-delay:4s" x="${X(vals.length-1)}" y="${Y(total)-20}" text-anchor="end">${total} items</text></svg>`;
   document.getElementById('chart').innerHTML = s;
-  document.getElementById('list').innerHTML = MS.map((ms, n) => `<li><span class="n">${n+1}</span><span><b>${esc(ms.short)}</b> <span class="d">${esc(ms.d)}</span><br>${esc(ms.text)}</span></li>`).join('');
+  play();
 }
 
+function play(){ const c=document.getElementById('chart'); c.classList.remove('anim'); void c.offsetWidth; c.classList.add('anim'); }
+document.getElementById('replay').addEventListener('click', play);
 fetch('learning.html').then(r => r.text()).then(html => {
   const m = html.match(/const DATA = (\[.*?\]);\n/s);
   const data = JSON.parse(m[1]); const c = {};
